@@ -1,0 +1,52 @@
+import pandas as pd  
+import matplotlib.pyplot as plt
+import seaborn as sns  
+
+df = pd.read_csv('/USArrests.csv') 
+df.head()
+df.info()
+df.describe()
+
+print(df.isnull().sum())
+
+num_cols = df.select_dtypes(include=['number']).columns
+df[num_cols] = df[num_cols].fillna(df[num_cols].mean()) 
+
+df = df.drop_duplicates()
+
+df['Assault'].value_counts().plot(kind='bar')
+plt.title('Bar Chart')
+plt.show()
+
+sns.scatterplot(data=df, x='Murder', y='Rape')
+plt.title('Scatter Plot')
+plt.show()
+
+df['Murder'].plot(kind='hist')
+plt.title('Histogram')
+plt.show()
+
+sns.boxplot(data=df, x='State', y='Assault')
+plt.title('Box Plot')
+plt.show()
+
+sns.pairplot(df)
+plt.show()
+from sklearn.cluster import KMeans
+
+selected_data = df[['Assault', 'UrbanPop']].dropna()  
+# Apply K-Means
+kmeans = KMeans(n_clusters=3)
+df['Cluster'] = kmeans.fit_predict(selected_data)
+
+print("Clusters added to data!")
+from sklearn.decomposition import PCA
+
+# Apply PCA
+pca = PCA(n_components=2)
+pca_result = pca.fit_transform(selected_data)
+
+# Visualize PCA
+plt.scatter(pca_result[:, 0], pca_result[:, 1], c=df['Cluster'])
+plt.title('PCA Plot')
+plt.show()
